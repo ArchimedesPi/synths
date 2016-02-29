@@ -20,15 +20,15 @@ typedef struct Wavetable {
 
 #define WT_SINE_LENGTH 256
 #define WT_SINE_AMPLITUDE 127
+#define WT_SQUARE_LENGTH 256
+#define WT_SQUARE_AMPLITUDE 127
+
+int wt_square_data[WT_SQUARE_LENGTH];
 int wt_sine_data[WT_SINE_LENGTH];
 
-#define WT_SAW_LENGTH 256
-#define WT_SAW_AMPLITUDE 127
-int wt_saw_amplitude[WT_SAW_LENGTH];
-
-inline void wt_sine_init(Wavetable *table) {
-    table->len = WT_SINE_LENGTH;
-    table->wave = wt_sine_data;
+inline void wt_init(Wavetable *table, int *data, u16 len) {
+    table->len = len;
+    table->wave = data;
 
     table->position = 0;
     table->accumulator = 0;

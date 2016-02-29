@@ -17,6 +17,7 @@
 #define AUDIOPIN 11
 
 #define SAMPLE_RATE 8000UL
+#define ACCUMULATOR_STEPS 2048UL
 
 #include "wavetables.h"
 
@@ -43,9 +44,13 @@ void setup() {
 
     initialize_datatables();
     for (int i=0; i<N_WAVETABLES; i++) {
-        wt_sine_init(&wavetables[i]);
+        wt_init(&wavetables[i], wt_sine_data, WT_SINE_LENGTH);
         wavetables[i].increment = 0; // all oscillators silent
     }
+
+    wavetables[0].increment = ACCUMULATOR_STEPS;
+    wavetables[0].currentnote = 0;
+    used_wavetables++;
 
     setup_sample_timer();
     setup_pwm_audio_timer();
