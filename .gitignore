@@ -76,4 +76,5 @@ Session.vim
 
 ### Ino/Arturo ###
 .build/
+.build_ano/
 
