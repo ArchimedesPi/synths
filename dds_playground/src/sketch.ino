@@ -48,10 +48,6 @@ void setup() {
         wavetables[i].increment = 0; // all oscillators silent
     }
 
-    wavetables[0].increment = ACCUMULATOR_STEPS;
-    wavetables[0].currentnote = 0;
-    used_wavetables++;
-
     setup_sample_timer();
     setup_pwm_audio_timer();
 }
