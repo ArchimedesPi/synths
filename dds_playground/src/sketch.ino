@@ -45,7 +45,10 @@ void setup() {
 
     initialize_datatables();
     for (int i=0; i<N_WAVETABLES; i++) {
-        wt_init(&wavetables[i], wt_sine_data, WT_SINE_LENGTH);
+        wt_init(&wavetables[i],
+            wt_sine_data,
+            WT_SINE_LENGTH,
+            WT_SINE_BASEFREQ);
         wavetables[i].increment = 0; // all oscillators silent
     }
 
