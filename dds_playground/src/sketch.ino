@@ -22,10 +22,13 @@
 
 #include "wavetables.h"
 #include "tuning.h"
+#include "effects.h"
 
 #define N_WAVETABLES 6
 Wavetable wavetables[N_WAVETABLES];
 u8 used_wavetables = 0;
+
+u8 globaleffects = 0;
 
 MIDI_CREATE_DEFAULT_INSTANCE();
 
@@ -43,6 +46,7 @@ void setup() {
     MIDI.begin(MIDI_CHANNEL_OMNI);
 
     lcd.begin(16, 2);
+    lcd.createChar(EFFECT_BITCRUSHER_ICON, effect_bitcrusher_icon);
 
     initialize_datatables();
     for (int i=0; i<N_WAVETABLES; i++) {
@@ -52,6 +56,8 @@ void setup() {
             WT_SINE_BASEFREQ);
         wavetables[i].increment = 0; // all oscillators silent
     }
+
+    globaleffects |= EFFECT_BITCRUSHER;
 
     setup_sample_timer();
     setup_pwm_audio_timer();
@@ -115,8 +121,9 @@ ISR(TIMER1_COMPA_vect) {
             wavetables[i].position -= wavetables[i].len;
         }
     }
-    
+
     sum /= used_wavetables;
+
     OCR2A = (u16) (sum + 128);
 
     ISR_DBG_PIN_OFF;
