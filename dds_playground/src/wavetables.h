@@ -16,14 +16,16 @@ typedef struct Wavetable {
     u32 increment;
 
     u8 currentnote;
+    u16 basefreq;
 } Wavetable;
 
 #define WT_SINE_LENGTH 256
 #define WT_SINE_AMPLITUDE 127
+#define WT_SINE_BASEFREQ 31.25
 
 int wt_sine_data[WT_SINE_LENGTH];
 
-inline void wt_init(Wavetable *table, int *data, u16 len) {
+inline void wt_init(Wavetable *table, int *data, u16 len, u16 basefreq) {
     table->len = len;
     table->wave = data;
 
@@ -32,6 +34,7 @@ inline void wt_init(Wavetable *table, int *data, u16 len) {
     table->increment = 0;
 
     table->currentnote = NONOTE;
+    table->basefreq = basefreq;
 }
 
 inline void initialize_datatables() {
