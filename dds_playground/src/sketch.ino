@@ -34,8 +34,6 @@ MIDI_CREATE_DEFAULT_INSTANCE();
 
 LiquidCrystal lcd(7, 8, 5, 4, 3, 2);
 
-String activeTables = "";
-
 void setup() {
     ISR_DBG_PIN_INIT;
     pinMode(13, OUTPUT);
@@ -67,18 +65,26 @@ void loop() {
     MIDI.read();
 
     EVERY(250) {
-        activeTables = "";
+        lcd.setCursor(0, 0);
+
+        if (EFFECT_ON(EFFECT_BITCRUSHER, globaleffects))
+            lcd.write(EFFECT_BITCRUSHER_ICON);
+        else
+            lcd.write(' ');
+
+
+        u8 tablemask = 0x00;
         for (int i=0; i<N_WAVETABLES; i++) {
-            if (wavetables[i].currentnote == NONOTE) {
-                activeTables += ' ';
-            } else {
-                activeTables += i;
+            if (wavetables[i].currentnote != NONOTE) {
+                tablemask |= (1 << i);
             }
         }
-        activeTables = activeTables + " (" + used_wavetables + "a)";
-
-        lcd.setCursor(0, 0);
-        lcd.print(activeTables);
+        lcd.print(tablemask, HEX);
+        lcd.write('/');
+        lcd.print(used_wavetables);
+        lcd.write('/');
+        lcd.print(wavetables[0].currentnote);
+        lcd.print("  ");
     }
 }
 
