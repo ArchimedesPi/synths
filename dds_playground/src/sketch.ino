@@ -21,6 +21,7 @@
 #define ACCUMULATOR_STEPS 2048UL
 
 #include "wavetables.h"
+#include "tuning.h"
 
 #define N_WAVETABLES 6
 Wavetable wavetables[N_WAVETABLES];
@@ -79,7 +80,7 @@ void handleNoteOn(u8 channel, u8 pitch, u8 velocity) {
     digitalWrite(13, HIGH);
     for (int i=0; i<N_WAVETABLES; i++) {
         if (wavetables[i].currentnote == NONOTE) {
-            wavetables[i].increment = 512 * pitch;
+            wavetables[i].increment = note_to_increment(pitch, wavetables[0].basefreq);
             wavetables[i].currentnote = pitch;
             used_wavetables++;
             break;
