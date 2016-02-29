@@ -11,9 +11,9 @@ typedef struct Wavetable {
     u16 len;
     int *wave;
     
-    u16 position;
-    u16 accumulator;
-    u16 increment;
+    u32 position;
+    u32 accumulator;
+    u32 increment;
 
     u8 currentnote;
 } Wavetable;
