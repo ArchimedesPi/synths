@@ -3,7 +3,7 @@
 
 #define PI 3.14159
 #define PI2 (PI*2)
-#define ACCUMULATOR_STEPS 2048UL
+#define ACCUMULATOR_STEPS 2048
 
 #define NONOTE 200 // MIDI notes go up to 127 so we can safely put our own overhead above that
 
