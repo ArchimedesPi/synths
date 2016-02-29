@@ -1,6 +1,7 @@
 #include <Streaming.h>
 #include <MIDI.h>
 #include <LiquidCrystal.h>
+#include <avr/pgmspace.h>
 
 #define u8 uint8_t
 #define u16 uint16_t
