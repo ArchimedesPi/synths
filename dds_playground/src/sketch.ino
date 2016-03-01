@@ -10,6 +10,7 @@
 #define set_bit(sfr, bit)   (_SFR_BYTE(sfr) |= _BV(bit))
 
 #define EVERY(ms) if (millis() % ms == 0)
+#define _EVERY(ms) (millis() % ms == 0)
 
 #define ISR_DBG_PIN_ON set_bit(PORTB, PB1)
 #define ISR_DBG_PIN_OFF clear_bit(PORTB, PB1)
@@ -86,13 +87,11 @@ void loop() {
         lcd.print("  ");
     }
 
-    if (EFFECT_ON(LFO, globaleffects)) {
-        EVERY(20) {
+    if (EFFECT_ON(LFO, globaleffects) && _EVERY(20)) {
         int lfo_value = update_lfo(&lfo) * lfo.amp;
-            for (int i=0; i<N_WAVETABLES; i++) {
-                if (wavetables[i].currentnote <= 127) {
-                    wavetables[i].increment = note_to_increment(wavetables[i].currentnote, wavetables[i].basefreq) + lfo_value;
-                }
+        for (int i=0; i<N_WAVETABLES; i++) {
+            if (wavetables[i].currentnote <= 127) {
+                wavetables[i].increment = note_to_increment(wavetables[i].currentnote, wavetables[i].basefreq) + lfo_value;
             }
         }
     }
