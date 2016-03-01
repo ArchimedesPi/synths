@@ -114,8 +114,7 @@ void handleNoteOff(u8 channel, u8 pitch, u8 velocity) {
     digitalWrite(13, LOW);
     for (int i=0; i<N_WAVETABLES; i++) {
         if (wavetables[i].currentnote == pitch) {
-            wavetables[i].increment = 0;
-            wavetables[i].currentnote = NONOTE;
+            wavetables[i].currentnote = NOTEOFF;
             used_wavetables--;
         }
     }
@@ -127,14 +126,20 @@ ISR(TIMER1_COMPA_vect) {
     int sum = 0;
 
     for (int i=0; i<N_WAVETABLES; i++) {
-        if (wavetables[i].increment != 0)
+        if (wavetables[i].currentnote == NOTEOFF) {
+            wavetables[i].accumulator = 0;
+            wavetables[i].position = 0;
+            wavetables[i].increment = 0;
+            wavetables[i].currentnote = NONOTE;
+        } else if (wavetables[i].currentnote != NONOTE) {
             sum += wavetables[i].wave[wavetables[i].position];
 
-        wavetables[i].accumulator += wavetables[i].increment;
-        wavetables[i].position += wavetables[i].accumulator / ACCUMULATOR_STEPS;
-        wavetables[i].accumulator %= ACCUMULATOR_STEPS;
-        if (wavetables[i].position > wavetables[i].len - 1) {
-            wavetables[i].position -= wavetables[i].len;
+            wavetables[i].accumulator += wavetables[i].increment;
+            wavetables[i].position += wavetables[i].accumulator / ACCUMULATOR_STEPS;
+            wavetables[i].accumulator %= ACCUMULATOR_STEPS;
+            if (wavetables[i].position > wavetables[i].len - 1) {
+                wavetables[i].position -= wavetables[i].len;
+            }
         }
     }
 

@@ -6,6 +6,7 @@
 #define ACCUMULATOR_STEPS 2048
 
 #define NONOTE 200 // MIDI notes go up to 127 so we can safely put our own overhead above that
+#define NOTEOFF 201
 
 typedef struct Wavetable {
     u16 len;
