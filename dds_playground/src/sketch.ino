@@ -18,7 +18,7 @@
 #define AUDIOPIN 11
 
 #define SAMPLE_RATE 8000UL
-#define ACCUMULATOR_STEPS 2048UL
+#define ACCUMULATOR_STEPS 2048
 
 #include "wavetables.h"
 #include "tuning.h"
