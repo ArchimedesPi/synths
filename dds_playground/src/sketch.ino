@@ -30,8 +30,9 @@ Wavetable wavetables[N_WAVETABLES];
 u8 used_wavetables = 0;
 
 u8 globaleffects = 0;
-struct Lfo lfo = {.rate = 0.05, .p = 0, .amp = 800};
+struct Lfo lfo = {.rate = 0.05, .p = 0, .amp = 1000};
 struct Arpeggiator arp = {.period = 10};
+#define ARP_KNOB analogRead(A0)
 
 MIDI_CREATE_DEFAULT_INSTANCE();
 
@@ -43,6 +44,7 @@ void setup() {
 
     MIDI.setHandleNoteOn(handleNoteOn);
     MIDI.setHandleNoteOff(handleNoteOff);
+    MIDI.setHandleControlChange(handleControlChange);
 
     MIDI.begin(MIDI_CHANNEL_OMNI);
 
@@ -104,15 +106,21 @@ void loop() {
     }
 
     if (EFFECT_ON(ARPEGGIATOR, globaleffects) && _EVERY(arp.period)) {
-        for (int i=0; i<N_WAVETABLES; i++) {
-            if (wavetables[i].currentnote <= 127) {
-            }
+    }
+    
+    EVERY(15) {
+        if (ARP_KNOB > 10) {
+            globaleffects |= ARPEGGIATOR;
+            arp.period = map(ARP_KNOB, 10, 1024, 250, 10);
+        } else {
+            globaleffects &= ~ARPEGGIATOR;
         }
     }
+
+    digitalWrite(13, used_wavetables);
 }
 
 void handleNoteOn(u8 channel, u8 pitch, u8 velocity) {
-    digitalWrite(13, HIGH);
     for (int i=0; i<N_WAVETABLES; i++) {
         if (wavetables[i].currentnote == NONOTE) {
             wavetables[i].increment = note_to_increment(pitch, wavetables[i].basefreq);
@@ -124,12 +132,25 @@ void handleNoteOn(u8 channel, u8 pitch, u8 velocity) {
 }
 
 void handleNoteOff(u8 channel, u8 pitch, u8 velocity) {
-    digitalWrite(13, LOW);
     for (int i=0; i<N_WAVETABLES; i++) {
         if (wavetables[i].currentnote == pitch) {
             wavetables[i].currentnote = NOTEOFF;
             used_wavetables--;
         }
+    }
+}
+
+void handleControlChange(u8 channel, u8 number, u8 value) {
+    switch (number) {
+        case 1: // C1 is modwheel
+            if (value > 0) {
+                globaleffects |= LFO;
+            } else {
+                globaleffects &= ~LFO;
+            }
+            break;
+        default:
+            break;
     }
 }
 

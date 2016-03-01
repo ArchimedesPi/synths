@@ -17,6 +17,7 @@ typedef struct Wavetable {
     u32 increment;
 
     u8 currentnote;
+    bool muted;
     double basefreq;
 } Wavetable;
 
@@ -36,6 +37,7 @@ inline void wt_init(Wavetable *table, int *data, u16 len, double basefreq) {
 
     table->currentnote = NONOTE;
     table->basefreq = basefreq;
+    table->muted = false;
 }
 
 inline void initialize_datatables() {
