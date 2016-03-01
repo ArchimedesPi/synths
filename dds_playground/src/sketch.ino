@@ -78,11 +78,11 @@ void loop() {
                 tablemask |= (1 << i);
             }
         }
+
+        lcd.write('|');
         lcd.print(tablemask, HEX);
-        lcd.write('/');
+        lcd.write('|');
         lcd.print(used_wavetables);
-        lcd.write('/');
-        lcd.print(wavetables[0].currentnote);
         lcd.print("  ");
     }
 
