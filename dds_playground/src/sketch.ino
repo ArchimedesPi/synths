@@ -92,7 +92,7 @@ void handleNoteOn(u8 channel, u8 pitch, u8 velocity) {
     digitalWrite(13, HIGH);
     for (int i=0; i<N_WAVETABLES; i++) {
         if (wavetables[i].currentnote == NONOTE) {
-            wavetables[i].increment = note_to_increment(pitch, wavetables[0].basefreq);
+            wavetables[i].increment = note_to_increment(pitch, wavetables[i].basefreq);
             wavetables[i].currentnote = pitch;
             used_wavetables++;
             break;
