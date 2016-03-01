@@ -29,6 +29,7 @@ Wavetable wavetables[N_WAVETABLES];
 u8 used_wavetables = 0;
 
 u8 globaleffects = 0;
+Lfo lfo = {.rate = 0.05, .p = 0, .amp = 800};
 
 MIDI_CREATE_DEFAULT_INSTANCE();
 
@@ -44,7 +45,6 @@ void setup() {
     MIDI.begin(MIDI_CHANNEL_OMNI);
 
     lcd.begin(16, 2);
-    lcd.createChar(EFFECT_BITCRUSHER_ICON, effect_bitcrusher_icon);
 
     initialize_datatables();
     for (int i=0; i<N_WAVETABLES; i++) {
@@ -55,7 +55,7 @@ void setup() {
         wavetables[i].increment = 0; // all oscillators silent
     }
 
-    globaleffects |= EFFECT_BITCRUSHER;
+    //globaleffects |= LFO;
 
     setup_sample_timer();
     setup_pwm_audio_timer();
@@ -67,11 +67,10 @@ void loop() {
     EVERY(250) {
         lcd.setCursor(0, 0);
 
-        if (EFFECT_ON(EFFECT_BITCRUSHER, globaleffects))
-            lcd.write(EFFECT_BITCRUSHER_ICON);
+        if (EFFECT_ON(LFO, globaleffects))
+            lcd.write('l');
         else
             lcd.write(' ');
-
 
         u8 tablemask = 0x00;
         for (int i=0; i<N_WAVETABLES; i++) {
@@ -85,6 +84,17 @@ void loop() {
         lcd.write('/');
         lcd.print(wavetables[0].currentnote);
         lcd.print("  ");
+    }
+
+    if (EFFECT_ON(LFO, globaleffects)) {
+        EVERY(20) {
+        int lfo_value = update_lfo(&lfo) * lfo.amp;
+            for (int i=0; i<N_WAVETABLES; i++) {
+                if (wavetables[i].currentnote <= 127) {
+                    wavetables[i].increment = note_to_increment(wavetables[i].currentnote, wavetables[i].basefreq) + lfo_value;
+                }
+            }
+        }
     }
 }
 
