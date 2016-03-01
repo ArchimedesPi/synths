@@ -30,7 +30,8 @@ Wavetable wavetables[N_WAVETABLES];
 u8 used_wavetables = 0;
 
 u8 globaleffects = 0;
-Lfo lfo = {.rate = 0.05, .p = 0, .amp = 800};
+struct Lfo lfo = {.rate = 0.05, .p = 0, .amp = 800};
+struct Arpeggiator arp = {.period = 10};
 
 MIDI_CREATE_DEFAULT_INSTANCE();
 
@@ -46,6 +47,7 @@ void setup() {
     MIDI.begin(MIDI_CHANNEL_OMNI);
 
     lcd.begin(16, 2);
+    lcd.createChar(ARPEGGIATOR_ICON, arpeggiator_icon);
 
     initialize_datatables();
     for (int i=0; i<N_WAVETABLES; i++) {
@@ -56,7 +58,7 @@ void setup() {
         wavetables[i].increment = 0; // all oscillators silent
     }
 
-    //globaleffects |= LFO;
+    globaleffects |= ARPEGGIATOR;
 
     setup_sample_timer();
     setup_pwm_audio_timer();
@@ -70,6 +72,11 @@ void loop() {
 
         if (EFFECT_ON(LFO, globaleffects))
             lcd.write('l');
+        else
+            lcd.write(' ');
+
+        if (EFFECT_ON(ARPEGGIATOR, globaleffects))
+            lcd.write(ARPEGGIATOR_ICON);
         else
             lcd.write(' ');
 
@@ -92,6 +99,13 @@ void loop() {
         for (int i=0; i<N_WAVETABLES; i++) {
             if (wavetables[i].currentnote <= 127) {
                 wavetables[i].increment = note_to_increment(wavetables[i].currentnote, wavetables[i].basefreq) + lfo_value;
+            }
+        }
+    }
+
+    if (EFFECT_ON(ARPEGGIATOR, globaleffects) && _EVERY(arp.period)) {
+        for (int i=0; i<N_WAVETABLES; i++) {
+            if (wavetables[i].currentnote <= 127) {
             }
         }
     }

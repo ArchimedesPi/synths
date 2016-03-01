@@ -20,5 +20,12 @@ float update_lfo(Lfo *lfo) {
     return lfo->p * (1 - fabs(lfo->p));
 }
 
+#define ARPEGGIATOR (1 << 1)
+struct Arpeggiator {
+    u16 period;
+};
+u8 arpeggiator_icon[] = {0x3,0x0,0x0,0xe,0x0,0x0,0x18,0x0};
+#define ARPEGGIATOR_ICON (u8)0
+
 
 #endif
