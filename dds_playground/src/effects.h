@@ -1,10 +1,9 @@
 #ifndef __EFFECTS_H__
 #define __EFFETCS_H__
 
+#include "types.h"
 #include "wavetables.h"
 
-#define i16 int16_t
-#define u8 uint8_t
 #define EFFECT_ON(effect, effects) effects & effect
 
 #define LFO (1 << 0)

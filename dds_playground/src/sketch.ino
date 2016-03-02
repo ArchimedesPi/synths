@@ -2,9 +2,7 @@
 #include <MIDI.h>
 #include <LiquidCrystal.h>
 #include <avr/pgmspace.h>
-
-#define u8 uint8_t
-#define u16 uint16_t
+#include "types.h"
 
 #define clear_bit(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
 #define set_bit(sfr, bit)   (_SFR_BYTE(sfr) |= _BV(bit))

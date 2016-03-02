@@ -1,6 +1,8 @@
 #ifndef __WAVETABLES_H__
 #define __WAVETABLES_H__
 
+#include "types.h"
+
 #define PI 3.14159
 #define PI2 (PI*2)
 #define ACCUMULATOR_STEPS 2048
