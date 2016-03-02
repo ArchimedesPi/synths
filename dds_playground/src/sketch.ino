@@ -32,6 +32,10 @@ struct Lfo lfo = {.rate = 0.05, .p = 0, .amp = 1000};
 struct Arpeggiator arp = {.period = 10};
 #define ARP_KNOB analogRead(A0)
 
+#define SINE_TOGGLE (digitalRead(9) == LOW)
+#define SQUARE_TOGGLE (digitalRead(10) == LOW)
+u8 current_wavetype = SINE_WAVE;
+
 MIDI_CREATE_DEFAULT_INSTANCE();
 
 LiquidCrystal lcd(7, 8, 5, 4, 3, 2);
@@ -39,6 +43,8 @@ LiquidCrystal lcd(7, 8, 5, 4, 3, 2);
 void setup() {
     ISR_DBG_PIN_INIT;
     pinMode(13, OUTPUT);
+    pinMode(9, INPUT_PULLUP);
+    pinMode(10, INPUT_PULLUP);
 
     MIDI.setHandleNoteOn(handleNoteOn);
     MIDI.setHandleNoteOff(handleNoteOff);
@@ -112,6 +118,26 @@ void loop() {
             arp.period = map(ARP_KNOB, 10, 1024, 250, 10);
         } else {
             globaleffects &= ~ARPEGGIATOR;
+        }
+    }
+
+    EVERY(20) {
+        if (SINE_TOGGLE && current_wavetype != SINE_WAVE) {
+            current_wavetype = SINE_WAVE;
+            for (int i=0; i<N_WAVETABLES; i++) {
+                wt_update_data(&wavetables[i],
+                    wt_sine_data,
+                    WT_SINE_LENGTH,
+                    WT_SINE_BASEFREQ);
+            }
+        } else if (SQUARE_TOGGLE && current_wavetype != SQUARE_WAVE) {
+            current_wavetype = SQUARE_WAVE;
+            for (int i=0; i<N_WAVETABLES; i++) {
+                wt_update_data(&wavetables[i],
+                    wt_square_data,
+                    WT_SQUARE_LENGTH,
+                    WT_SQUARE_BASEFREQ);
+            }
         }
     }
 
