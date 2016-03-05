@@ -1,0 +1,18 @@
+#ifndef __BZMN_UTILS_H__
+#define __BZMN_UTILS_H__
+
+// -- nice shorthand for c arithmetic types
+#define u8 uint8_t
+#define u16 uint16_t
+#define u32 uint32_t
+#define i8 int8_t
+#define i16 int16_t
+#define i32 int32_t
+
+// -- bit twiddling
+#define BV(bit)                 (1 << bit)
+#define set_bit(sfr, bit)      (_SFR_BYTE(sfr) |= BV(bit))
+#define clear_bit(sfr, bit)    (_SFR_BYTE(sfr) &= ~BV(bit))
+#define toggle_bit(sfr, bit)   (_SFR_BYTE(sfr) ^= BV(bit))
+
+#endif
