@@ -29,11 +29,13 @@ u8 used_wavetables = 0;
 
 u8 globaleffects = 0;
 struct Lfo lfo = {.rate = 0.05, .p = 0, .amp = 1000};
-struct Arpeggiator arp = {.period = 10};
+struct Arpeggiator arp;
 #define ARP_KNOB analogRead(A0)
 
-#define SINE_TOGGLE (digitalRead(9) == LOW)
-#define SQUARE_TOGGLE (digitalRead(10) == LOW)
+//#define SINE_TOGGLE (digitalRead(10) == LOW)
+//#define RAMP_TOGGLE (digitalRead(9) == LOW)
+//#define SQUARE_TOGGLE (!SINE_TOGGLE && !RAMP_TOGGLE)
+
 u8 current_wavetype = SINE_WAVE;
 
 MIDI_CREATE_DEFAULT_INSTANCE();
@@ -63,7 +65,8 @@ void setup() {
             WT_SINE_BASEFREQ);
         wavetables[i].increment = 0; // all oscillators silent
     }
-
+    
+    arp_init(&arp);
     globaleffects |= ARPEGGIATOR;
 
     setup_sample_timer();
@@ -73,75 +76,80 @@ void setup() {
 void loop() {
     MIDI.read();
 
+//    EVERY(250) {
+//        lcd.setCursor(0, 0);
+//
+//        if (EFFECT_ON(LFO, globaleffects))
+//            lcd.write('l');
+//        else
+//            lcd.write(' ');
+//
+//        if (EFFECT_ON(ARPEGGIATOR, globaleffects))
+//            lcd.write(ARPEGGIATOR_ICON);
+//        else
+//            lcd.write(' ');
+//
+//        u8 tablemask = 0x00;
+//        for (int i=0; i<N_WAVETABLES; i++) {
+//            if (wavetables[i].currentnote != NONOTE) {
+//                tablemask |= (1 << i);
+//            }
+//        }
+//
+//        lcd.write('|');
+//        lcd.print(tablemask, HEX);
+//        lcd.write('|');
+//        lcd.print(used_wavetables);
+//        lcd.write('|');
+//        lcd.print(arp.pointer);
+//        lcd.print("  ");
+//    }
+
+//    if (EFFECT_ON(LFO, globaleffects) && _EVERY(20)) {
+//        int lfo_value = update_lfo(&lfo) * lfo.amp;
+//        for (int i=0; i<N_WAVETABLES; i++) {
+//            if (wavetables[i].currentnote <= 127) {
+//                wavetables[i].increment = note_to_increment(wavetables[i].currentnote, wavetables[i].basefreq) + lfo_value;
+//            }
+//        }
+//    }
+//
+//    EVERY(15) {
+//        if (ARP_KNOB > 10) {
+//            globaleffects |= ARPEGGIATOR;
+//            arp.period = map(ARP_KNOB, 10, 1024, 250, 10);
+//            arp.pointer = 0;
+//        } else {
+//            globaleffects &= ~ARPEGGIATOR;
+//        }
+//    }
+
     EVERY(250) {
-        lcd.setCursor(0, 0);
-
-        if (EFFECT_ON(LFO, globaleffects))
-            lcd.write('l');
-        else
-            lcd.write(' ');
-
-        if (EFFECT_ON(ARPEGGIATOR, globaleffects))
-            lcd.write(ARPEGGIATOR_ICON);
-        else
-            lcd.write(' ');
-
-        u8 tablemask = 0x00;
-        for (int i=0; i<N_WAVETABLES; i++) {
-            if (wavetables[i].currentnote != NONOTE) {
-                tablemask |= (1 << i);
-            }
-        }
-
-        lcd.write('|');
-        lcd.print(tablemask, HEX);
-        lcd.write('|');
-        lcd.print(used_wavetables);
-        lcd.print("  ");
-    }
-
-    if (EFFECT_ON(LFO, globaleffects) && _EVERY(20)) {
-        int lfo_value = update_lfo(&lfo) * lfo.amp;
-        for (int i=0; i<N_WAVETABLES; i++) {
-            if (wavetables[i].currentnote <= 127) {
-                wavetables[i].increment = note_to_increment(wavetables[i].currentnote, wavetables[i].basefreq) + lfo_value;
-            }
-        }
-    }
-
-    if (EFFECT_ON(ARPEGGIATOR, globaleffects) && _EVERY(arp.period)) {
+        arp_wts(&arp, used_wavetables);
+        digitalWrite(13, !digitalRead(13));
     }
     
-    EVERY(15) {
-        if (ARP_KNOB > 10) {
-            globaleffects |= ARPEGGIATOR;
-            arp.period = map(ARP_KNOB, 10, 1024, 250, 10);
-        } else {
-            globaleffects &= ~ARPEGGIATOR;
-        }
-    }
+//    EVERY(20) {
+//        if (SINE_TOGGLE && current_wavetype != SINE_WAVE) {
+//            current_wavetype = SINE_WAVE;
+//            for (int i=0; i<N_WAVETABLES; i++) {
+//                wt_update_data(&wavetables[i],
+//                    wt_sine_data,
+//                    WT_SINE_LENGTH,
+//                    WT_SINE_BASEFREQ);
+//            }
+//        } else if (SQUARE_TOGGLE && current_wavetype != SQUARE_WAVE) {
+//            current_wavetype = SQUARE_WAVE;
+//            for (int i=0; i<N_WAVETABLES; i++) {
+//                wt_update_data(&wavetables[i],
+//                    wt_square_data,
+//                    WT_SQUARE_LENGTH,
+//                    WT_SQUARE_BASEFREQ);
+//            }
+//        }
+//    }
 
-    EVERY(20) {
-        if (SINE_TOGGLE && current_wavetype != SINE_WAVE) {
-            current_wavetype = SINE_WAVE;
-            for (int i=0; i<N_WAVETABLES; i++) {
-                wt_update_data(&wavetables[i],
-                    wt_sine_data,
-                    WT_SINE_LENGTH,
-                    WT_SINE_BASEFREQ);
-            }
-        } else if (SQUARE_TOGGLE && current_wavetype != SQUARE_WAVE) {
-            current_wavetype = SQUARE_WAVE;
-            for (int i=0; i<N_WAVETABLES; i++) {
-                wt_update_data(&wavetables[i],
-                    wt_square_data,
-                    WT_SQUARE_LENGTH,
-                    WT_SQUARE_BASEFREQ);
-            }
-        }
-    }
-
-    digitalWrite(13, used_wavetables);
+    //digitalWrite(13, used_wavetables);
 }
 
 void handleNoteOn(u8 channel, u8 pitch, u8 velocity) {
@@ -171,6 +179,9 @@ void handleControlChange(u8 channel, u8 number, u8 value) {
                 globaleffects |= LFO;
             } else {
                 globaleffects &= ~LFO;
+                for (int i=0; i<N_WAVETABLES; i++) {
+                    wavetables[i].increment = note_to_increment(wavetables[i].currentnote, wavetables[i].basefreq);
+                }
             }
             break;
         default:
@@ -190,7 +201,8 @@ ISR(TIMER1_COMPA_vect) {
             wavetables[i].increment = 0;
             wavetables[i].currentnote = NONOTE;
         } else if (wavetables[i].currentnote != NONOTE) {
-            sum += wavetables[i].wave[wavetables[i].position];
+            if (!wavetables[i].muted)
+                sum += wavetables[i].wave[wavetables[i].position];
 
             wavetables[i].accumulator += wavetables[i].increment;
             wavetables[i].position += wavetables[i].accumulator / ACCUMULATOR_STEPS;

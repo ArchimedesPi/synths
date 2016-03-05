@@ -34,7 +34,7 @@ typedef struct Wavetable {
 #define SQUARE_WAVE 2
 
 int wt_sine_data[WT_SINE_LENGTH];
-int wt_square_data[WT_SQUARE_LENGTH];
+//int wt_square_data[WT_SQUARE_LENGTH];
 
 inline void wt_init(Wavetable *table, int *data, u16 len, double basefreq) {
     table->len = len;
@@ -60,12 +60,12 @@ inline void initialize_datatables() {
         wt_sine_data[i] = int(WT_SINE_AMPLITUDE * sin((PI2/WT_SINE_LENGTH) * i));
     }
 
-    for (int i=0; i<(WT_SQUARE_LENGTH/2); i++) {
-        wt_square_data[i] = 127;
-    }
-    for (int i=(WT_SQUARE_LENGTH/2); i<WT_SQUARE_LENGTH; i++) {
-        wt_square_data[i] = 0;
-    }
+    //for (int i=0; i<(WT_SQUARE_LENGTH/2); i++) {
+    //    wt_square_data[i] = 127;
+    //}
+    //for (int i=(WT_SQUARE_LENGTH/2); i<WT_SQUARE_LENGTH; i++) {
+    //    wt_square_data[i] = -127;
+    //}
 }
 
 

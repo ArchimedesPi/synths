@@ -3,6 +3,9 @@
 
 #include "types.h"
 #include "wavetables.h"
+#include "stdlib.h"
+
+#define N_WAVETABLES 6
 
 #define EFFECT_ON(effect, effects) effects & effect
 
@@ -19,12 +22,26 @@ float update_lfo(Lfo *lfo) {
     return lfo->p * (1 - fabs(lfo->p));
 }
 
+
+
 #define ARPEGGIATOR (1 << 1)
 struct Arpeggiator {
     u16 period;
+
+    u8 pointer;
 };
 u8 arpeggiator_icon[] = {0x3,0x0,0x0,0xe,0x0,0x0,0x18,0x0};
 #define ARPEGGIATOR_ICON (u8)0
+
+inline void arp_init(Arpeggiator *arp) {
+    arp->period = 0;
+    
+    arp->pointer = 0;
+}
+
+inline void arp_wts(Arpeggiator *arp, u8 active_wts) {
+    arp->pointer++;
+}
 
 
 #endif
