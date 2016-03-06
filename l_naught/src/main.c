@@ -9,11 +9,10 @@
 int main() {
     spi_init();
 
+    u16 accumulator = 0;
     while (1) {
-        SLAVE_SELECT;
-        spi_swap_byte(0xfa);
-        SLAVE_DESELECT;
-        _delay_ms(100);
+        dac_write(accumulator);
+        accumulator += 15;
     }
 
     return 0;
