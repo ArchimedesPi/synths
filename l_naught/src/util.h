@@ -10,9 +10,9 @@
 #define i32 int32_t
 
 // -- bit twiddling
-#define BV(bit)                 (1 << bit)
-#define set_bit(sfr, bit)      (_SFR_BYTE(sfr) |= BV(bit))
-#define clear_bit(sfr, bit)    (_SFR_BYTE(sfr) &= ~BV(bit))
-#define toggle_bit(sfr, bit)   (_SFR_BYTE(sfr) ^= BV(bit))
+#define _BV(bit)                 (1 << bit)
+#define set_bit(sfr, bit)      (_SFR_BYTE(sfr) |= _BV(bit))
+#define clear_bit(sfr, bit)    (_SFR_BYTE(sfr) &= ~_BV(bit))
+#define toggle_bit(sfr, bit)   (_SFR_BYTE(sfr) ^= _BV(bit))
 
 #endif
