@@ -74,7 +74,10 @@ Session.vim
 # Debug files
 *.dSYM/
 
+# Disassembly and mapping
+*.map
+
 ### Ino/Arturo ###
 .build/
 .build_ano/
-
+*.pyc
