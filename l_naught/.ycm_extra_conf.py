@@ -37,7 +37,10 @@ flags = [
     '-x',
     'c',
     '-DF_CPU=16000000UL',
+    '-D__AVR_ATmega328P__',
     '-Isrc/',
+    '-I/usr/avr/include',
+    '-O3',
     '-Wall',
     '-std=gnu99',
 ]

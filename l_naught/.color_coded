@@ -1,6 +1,0 @@
--x
-c
--DF_CPU=16000000UL
--Isrc/
--Wall
--std=gnu99
