@@ -4,16 +4,16 @@
 #include <stdint.h>
 
 #include "util.h"
-
+#include "mcp4921.h"
 
 int main() {
-    set_bit(DDRB, PB5);
-    
-    while(true) {
-        set_bit(PORTB, PB5);
-        _delay_ms(1000);
-        clear_bit(PORTB, PB5);
-        _delay_ms(1000);
+    spi_init();
+
+    while (1) {
+        SLAVE_SELECT;
+        spi_swap_byte(0xfa);
+        SLAVE_DESELECT;
+        _delay_ms(100);
     }
 
     return 0;
