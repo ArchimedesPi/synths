@@ -7,7 +7,7 @@ PROGRAMMER_TYPE := usbtiny
 AVRDUDE_FLAGS := -c $(PROGRAMMER_TYPE) -p $(MCU)
 
 # -- compilers and other toolchain shit
-CC ?= avr-gcc
+CC := avr-gcc
 OBJCOPY := avr-objcopy
 OBJDUMP := avr-objdump
 AVRSIZE := avr-size
@@ -22,10 +22,10 @@ HEADERS := $(shell find src/ -name '*.h')
 
 # compilation flags
 CFLAGS = -DF_CPU=$(F_CPU) -Isrc/
-CFLAGS += -Os -g -std=gnu99 -Wall
+CFLAGS += -std=gnu99 -Wall
 CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
 CFLAGS += -ffunction-sections -fdata-sections
-CFLAGS += -O3 # highest optimization level
+CFLAGS += -Os
 
 LDFLAGS = -Wl,-Map,$(TARGET).map
 LDFLAGS += -Wl,--gc-sections
@@ -55,7 +55,7 @@ $(TARGET).elf: $(OBJECTS)
 all: $(TARGET).hex
 
 clean:
-	rm $(OBJECTS) $(TARGET).elf $(TARGET).hex $(TARGET).obj \
+	rm -f $(OBJECTS) $(TARGET).elf $(TARGET).hex $(TARGET).obj \
 		$(TARGET).o $(TARGET).d $(TARGET).eep $(TARGET).lst \
 		$(TARGET).lss $(TARGET).sym $(TARGET).map $(TARGET)~ \
 		$(TARGET).eeprom
