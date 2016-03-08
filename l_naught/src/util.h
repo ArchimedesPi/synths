@@ -1,6 +1,9 @@
 #ifndef __BZMN_UTILS_H__
 #define __BZMN_UTILS_H__
 
+#include <stdint.h>
+#include <stdbool.h>
+
 // -- nice shorthand for c arithmetic types
 #define u8 uint8_t
 #define u16 uint16_t
