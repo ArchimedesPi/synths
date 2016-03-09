@@ -17,9 +17,10 @@ enum Waveform {
 #define WT_SINE_LENGTH 256
 #define WT_TRIANGLE_LENGTH 256
 #define WT_SQUARE3_LENGTH 256
+#define WT_SQUARE_LENGTH 256
 
 #define ACCUMULATOR_STEPS 2048
-#define SAMPLE_RATE 4000 // Hz
+#define SAMPLE_RATE 8000 // Hz
 
 typedef struct Wavetable {
     const i8 *data;
@@ -29,6 +30,8 @@ typedef struct Wavetable {
     u32 increment;
     u32 accumulator;
 
+    u8 mul;
+    bool decaying;
 } Wavetable;
 
 inline void wt_init(Wavetable *wt, const i8 *data, u16 len) {
@@ -38,6 +41,9 @@ inline void wt_init(Wavetable *wt, const i8 *data, u16 len) {
     wt->pointer = 0; // start at the beginning of the sample
     wt->increment = 0; // start with the sample stopped
     wt->accumulator = 0; // zero the phase
+
+    wt->mul = 16; // full volume
+    wt->decaying = false;
 }
 
 inline i8 get_wt_value(Wavetable *wt) {
@@ -51,6 +57,13 @@ inline i8 get_wt_value(Wavetable *wt) {
     return value;
 }
 
+inline void wt_reset(Wavetable *wt) {
+    wt->pointer = 0;
+    wt->increment = 0;
+    wt->accumulator = 0;
+    wt->mul = 16;
+    wt->decaying = false;
+}
 
 // -- interrupts
 

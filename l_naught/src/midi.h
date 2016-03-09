@@ -5,7 +5,8 @@
 #include "usart.h"
 #include <avr/io.h>
 
-#define CHECK_BIT(var,pos) ((var) & (1<<(pos)))
+
+#define IS_DOUBLE_BYTE_STATUS(sn) ((sn == 0x8) || (sn == 0x9) || (sn == 0xA) || (sn == 0xB) || (sn == 0xE))
 
 enum MidiState {
     MS_IDLE,
@@ -29,6 +30,9 @@ static inline void handleMessage() {
     switch (midi_status_nybble) {
         case 0x9:
             midi_note_on(midi_channel, midi_data_bytes[0], midi_data_bytes[1]);
+            break;
+        case 0x8:
+            midi_note_off(midi_channel, midi_data_bytes[0], midi_data_bytes[1]);
             break;
         default:
             break;
@@ -60,6 +64,13 @@ static inline void process_status_byte(u8 byte) {
 static inline void process_data_byte(u8 byte) {
     midi_data_bytes[n_byte] = byte;
 
+    if (!IS_DOUBLE_BYTE_STATUS(midi_status_nybble)) {
+        handleMessage();
+        n_byte = 0;
+        midiState = MS_IDLE;
+        return;
+    }
+
     if (n_byte == 1) {
         handleMessage();
         n_byte = 0;
@@ -83,8 +94,5 @@ void midi_process_byte(u8 data) {
             break;
     }
 }
-
-
-
 
 #endif

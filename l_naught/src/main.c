@@ -11,11 +11,12 @@
 #include "usart.h"
 
 #define N_VOICES 1
-Wavetable oscillator1[N_VOICES];
-Wavetable oscillator2[N_VOICES];
+volatile Wavetable oscillator1[N_VOICES];
+volatile Wavetable oscillator2[N_VOICES];
 enum Waveform oscillator1_wave = SINE_WAVE;
 enum Waveform oscillator2_wave = NO_WAVE;
 
+u32 t = 0;
 
 #include "midi.h"
 
@@ -34,8 +35,18 @@ int main() {
     sei();
 
     while (true) {
-       u8 in_byte =  uart_getchar();
-       midi_process_byte(in_byte);
+        if (CHECK_BIT(UCSR0A, RXC0)) {
+           midi_process_byte(UDR0);
+        }
+
+        if (oscillator1[0].decaying && (t % 10 == 0)) {
+            oscillator1[0].mul--;
+            if (oscillator1[0].mul == 0) {
+                wt_reset(&oscillator1[0]);
+            }
+        }
+
+        t++;
     }
 
     return 0;
@@ -45,11 +56,17 @@ ISR(TIMER1_COMPA_vect) {
     u16 mixer = 0;
     mixer += get_wt_value(&oscillator1[0]);
     mixer += 128;
-    mixer *= 16;
+    mixer *= oscillator1[0].mul;
     dac_write(mixer);
 }
 
 
 inline void midi_note_on(u8 channel, u8 note, u8 velocity) {
+    wt_reset(&oscillator1[0]);
     oscillator1[0].increment = note_to_increment(note);
+}
+
+inline void midi_note_off(u8 channel, u8 note, u8 velocity) {
+    // decay
+    oscillator1[0].decaying = true;
 }

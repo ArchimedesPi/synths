@@ -18,12 +18,12 @@ inline void usart_init() {
     UCSR0B = _BV(RXEN0) | _BV(TXEN0);   /* Enable RX and TX */
 }
 
-void uart_putchar(char c) {
+inline void uart_putchar(char c) {
     loop_until_bit_is_set(UCSR0A, UDRE0); /* Wait until data register empty. */
     UDR0 = c;
 }
 
-char uart_getchar(void) {
+inline char uart_getchar(void) {
     loop_until_bit_is_set(UCSR0A, RXC0); /* Wait until data exists. */
     return UDR0;
 }

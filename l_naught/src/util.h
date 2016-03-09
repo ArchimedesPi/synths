@@ -17,5 +17,6 @@
 #define set_bit(sfr, bit)      (_SFR_BYTE(sfr) |= _BV(bit))
 #define clear_bit(sfr, bit)    (_SFR_BYTE(sfr) &= ~_BV(bit))
 #define toggle_bit(sfr, bit)   (_SFR_BYTE(sfr) ^= _BV(bit))
+#define CHECK_BIT(var,pos) ((var) & (1<<(pos)))
 
 #endif
