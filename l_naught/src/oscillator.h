@@ -9,6 +9,8 @@
 enum Waveform {
     SINE_WAVE,
     TRIANGLE_WAVE,
+    SQUARE_WAVE,
+    SAWTOOTH_WAVE,
     NO_WAVE,
 };
 
@@ -22,6 +24,9 @@ enum Waveform {
 #define ACCUMULATOR_STEPS 2048
 #define SAMPLE_RATE 8000 // Hz
 
+#include "tuning.h"
+
+typedef u8 Note;
 typedef struct Wavetable {
     const i8 *data;
     u16 len;
@@ -32,7 +37,11 @@ typedef struct Wavetable {
 
     u8 mul;
     bool decaying;
+
+    Note note;
 } Wavetable;
+
+#define NO_NOTE 200
 
 inline void wt_init(Wavetable *wt, const i8 *data, u16 len) {
     wt->data = data;
@@ -44,9 +53,13 @@ inline void wt_init(Wavetable *wt, const i8 *data, u16 len) {
 
     wt->mul = 16; // full volume
     wt->decaying = false;
+
+    wt->note = NO_NOTE;
 }
 
 inline i8 get_wt_value(Wavetable *wt) {
+    if (wt->note==NO_NOTE) return 0;
+
     i8 value = (i8)pgm_read_byte_near(wt->data + wt->pointer);
     
     wt->accumulator += wt->increment;
@@ -63,6 +76,12 @@ inline void wt_reset(Wavetable *wt) {
     wt->accumulator = 0;
     wt->mul = 16;
     wt->decaying = false;
+    wt->note = NO_NOTE;
+}
+
+inline void wt_set_note(Wavetable *wt, u8 note) {
+    wt->note = (Note) note;
+    wt->increment = note_to_increment(note);
 }
 
 // -- interrupts

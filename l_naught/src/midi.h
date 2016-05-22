@@ -25,6 +25,7 @@ u8 midi_data_bytes[2] = {0, 0};
 u8 n_byte = 0;
 
 inline void midi_note_on(u8 channel, u8 note, u8 velocity);
+inline void midi_note_off(u8 channel, u8 note, u8 velocity);
 
 static inline void handleMessage() {
     switch (midi_status_nybble) {
@@ -39,13 +40,6 @@ static inline void handleMessage() {
     }
 
     toggle_bit(PORTB, PB0);
-
-    uart_putchar('s'); uart_putchar(midi_status_nybble);
-    uart_putchar('c'); uart_putchar(midi_channel);
-    uart_putchar('d');
-    uart_putchar(midi_data_bytes[0]);
-    uart_putchar(midi_data_bytes[1]);
-    uart_putchar('.');
 }
 
 static inline enum MsgType byte_type(u8 byte) {
