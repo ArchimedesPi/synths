@@ -19,6 +19,15 @@ inline u8 spi_swap_byte(u8 data) {
     return (SPDR);
 }
 
+/* dacwrite(u16 data)
+ * writes a 12 bit value out to the dac.
+ * note: `data` *is* u16 but gets truncated to 12 bits and loses 4 lsbs of precision.
+ *
+ * speed:
+ *   bitbang: 8.8us
+ *   hw spi: 4.2us (!!!)
+ */
+
 inline void dac_write(u16 data) {
     SLAVE_SELECT;
     data &= 0xfff; // truncate to 12 bits
