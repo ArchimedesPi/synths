@@ -53,11 +53,13 @@ int main() {
 }
 
 ISR(TIMER1_COMPA_vect) {
+    set_bit(PORTB, PB0);
     u16 mixer = 0;
     mixer += get_wt_value(&oscillator1[0]);
     mixer += 128;
     mixer *= oscillator1[0].mul;
     dac_write(mixer);
+    clear_bit(PORTB, PB0);
 }
 
 
